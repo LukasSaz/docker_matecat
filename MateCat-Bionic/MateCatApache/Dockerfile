@@ -1,4 +1,4 @@
-FROM ostico/bionic-base:latest
+FROM ubuntu:18.04
 
 # Prepare the environment
 ENV PHP_POST_MAX_SIZE 1024M
@@ -14,7 +14,7 @@ ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
 
 RUN ln -fs /usr/share/zoneinfo/Europe/Rome /etc/localtime
 
-RUN apt-get update && apt-get -y full-upgrade
+RUN apt-get update && apt-get -y full-upgrade && apt-get install -y locales software-properties-common git
 
 RUN locale-gen en_US.UTF-8
 RUN LC_ALL=C.UTF-8 add-apt-repository ppa:ondrej/php
@@ -25,12 +25,6 @@ RUN apt-get update && apt-get -y --fix-missing install \
     php5.6 php5.6-json php5.6-curl php5.6-xdebug php5.6-mysql php5.6-xml php5.6-mbstring php5.6-dev php5.6-mcrypt php5.6-redis php5.6-zip \
     mysql-client libzip-dev unzip \
     && echo "ServerName localhost" >> /etc/apache2/apache2.conf
-
-COPY ./app_configs/config.ini /tmp/config.ini
-COPY ./app_configs/node_config.ini /tmp/node_config.ini
-COPY ./app_configs/Error_Mail_List.ini /tmp/Error_Mail_List.ini
-COPY ./app_configs/oauth_config.ini /tmp/oauth_config.ini
-COPY ./app_configs/task_manager_config.ini /tmp/task_manager_config.ini
 
 # Apache
 RUN mkdir /var/log/apache2/matecat/
@@ -66,10 +60,8 @@ RUN /tmp/x_debug_setup.sh
 #RUN /tmp/rdkafka_setup.sh
 
 # NodeJs
-COPY ./node-install.sh /tmp/node-install.sh
-RUN chmod +x /tmp/node-install.sh
-RUN /tmp/node-install.sh
-RUN rm /tmp/node-install.sh
+RUN curl -sL https://deb.nodesource.com/setup_6.x | bash
+RUN apt-get install -y nodejs npm
 
 COPY prepare.sh /tmp/prepare.sh
 RUN chmod +x /tmp/prepare.sh
@@ -78,6 +70,12 @@ WORKDIR /var/www/matecat
 RUN git clone https://github.com/matecat/MateCat.git .
 
 RUN /tmp/prepare.sh
+
+COPY ./app_configs/config.ini /var/www/matecat/inc/config.ini
+COPY ./app_configs/node_config.ini /var/www/matecat/nodejs/config.ini
+COPY ./app_configs/Error_Mail_List.ini /var/www/matecat/inc/Error_Mail_List.ini
+COPY ./app_configs/oauth_config.ini /var/www/matecat/inc/oauth_config.ini
+COPY ./app_configs/task_manager_config.ini /var/www/matecat/inc/task_manager_config.ini
 
 COPY run-matecat.sh /run-matecat.sh
 RUN chmod +x /run-matecat.sh

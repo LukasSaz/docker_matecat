@@ -13,20 +13,20 @@ echo "=> MySQL is available! OK"
 # set working dir
 cd ${MATECAT_HOME}
 
-echo "=> Ensuring matecat schema exists"
-# MySql MateCat
-# Creating schema and fill some data
-MATECAT_EXISTS=$(mysql -uadmin -padmin -h mysql -e "show databases like 'matecat%'")
-if [[ -z "${MATECAT_EXISTS}" ]]; then
-    echo "=> matecat schema does not exist, creating"
-    echo "=> Executing: /usr/bin/mysql -uadmin -padmin -h mysql < ./lib/Model/matecat.sql"
-    /usr/bin/mysql -uadmin -padmin -h mysql < ./lib/Model/matecat.sql
-    SCHEMA_CREATE=$?
-    if [[ SCHEMA_CREATE -ne 0 ]]; then
-      echo "=> ERROR SCHEMA_CREATE=$SCHEMA_CREATE"
-      exit
-    fi
-fi
+# echo "=> Ensuring matecat schema exists"
+# # MySql MateCat
+# # Creating schema and fill some data
+# MATECAT_EXISTS=$(mysql -uadmin -padmin -h mysql -e "show databases like 'matecat%'")
+# if [[ -z "${MATECAT_EXISTS}" ]]; then
+#     echo "=> matecat schema does not exist, creating"
+#     echo "=> Executing: /usr/bin/mysql -uadmin -padmin -h mysql < ./lib/Model/matecat.sql"
+#     /usr/bin/mysql -uadmin -padmin -h mysql < ./lib/Model/matecat.sql
+#     SCHEMA_CREATE=$?
+#     if [[ SCHEMA_CREATE -ne 0 ]]; then
+#       echo "=> ERROR SCHEMA_CREATE=$SCHEMA_CREATE"
+#       exit
+#     fi
+# fi
 
 # set configurations
 MATECAT_VERSION=$(fgrep '=' ./inc/version.ini | awk '{print $3}')
